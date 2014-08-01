@@ -1,0 +1,4 @@
+#! /bin/zsh
+alias ls='ls -G'
+alias rm='rm -i'
+alias less='/usr/share/vim/vim73/macros/less.sh'
