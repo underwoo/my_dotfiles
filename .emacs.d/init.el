@@ -5,13 +5,25 @@
 ;;    - Initial create
 ;; ==========================================================
 
+;; ********** Add my lisp directory to load-path **********
+(let ((default-directory "~/.emacs.d/lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
+
 ;; ********** Set the color theme **********
-;;(require 'color-theme)
-;;(color-theme-initialize)
-;;(color-theme-charcoal-black)
+(require 'color-theme)
+(color-theme-initialize)
+(color-theme-charcoal-black)
+
+;; Frame size for use on my laptop
+(setq default-frame-alist '((width . 140) (height . 50)))
+;; Some environment variables needed in emacs
+(setenv "X509_USER_PROXY" "/Users/underwoo/.globus/x509up_u")
 
 ;; Suppress the splash screen on startup
 (setq inhibit-splash-screen t)
+
+;; Set default home directory
+(setq default-directory "~/")
 
 ;; Set the custom file
 (setq custom-file "~/.emacs.d/customs.el")
@@ -27,8 +39,22 @@
 ;; Tramp settings
 (load-file "~/.emacs.d/tramp.el")
 
+;; Git settings
+(require 'git)
+(require 'git-blame)
+
 ;; doc-mode / asciidoc
 ;;(load-file "~/.emacs.d/asciidoc.el")
+
+;; spell checking
+(add-to-list 'exec-path "/usr/local/hunspell/1.3.3/bin")
+(when (executable-find "hunspell")
+  (setq-default ispell-program-name "hunspell")
+  (setq ispell-really-hunspell t))
+(eval-after-load "flyspell"
+    '(progn
+       (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
+       (define-key flyspell-mouse-map [mouse-3] #'undefined)))
 
 ;; =====================================================================
 ;; Development settings
@@ -72,8 +98,10 @@
 (add-hook 'f90-mode-hook
 	  '(lambda ()
 ;;	     (setq f90-auto-keyword-case 'upcase-word)
+             (setq f90-break-before-delimeters nil)
 	     (setq fill-column 130)
 	     (setq truncate-lines t)
+             (setq indent-tabs-mode nil)
 	     (linum-mode)
 	     (turn-on-auto-fill)
 	     (hs-minor-mode)
@@ -94,3 +122,23 @@
 	  '(lambda ()
 	     (linum-mode)
 	     (flyspell-prog-mode)))
+
+;; nXML Settings 
+(fset 'xml-mode 'nxml-mode)
+(fset 'html-mode 'nxml-mode)
+(setq auto-mode-alist
+      (append
+       (list
+        '("\\.xsd" . nxml-mode)
+        '("\\.sch" . nxml-mode)
+        '("\\.rng" . nxml-mode)
+        '("\\.xslt" . nxml-mode)
+        '("\\.svg" . nxml-mode)
+        '("\\.rss" . nxml-mode))
+       auto-mode-alist))
+(add-hook 'nxml-mode-hook
+          '(lambda ()
+             (setq indent-tabs-mode nil)
+             ))
+(unify-8859-on-decoding-mode)
+
